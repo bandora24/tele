@@ -3,7 +3,7 @@ import logging
 import time
 from PIL import Image
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, filters
 from telegram.error import TelegramError
 
 # إعدادات البوت
