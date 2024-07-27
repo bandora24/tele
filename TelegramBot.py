@@ -1,10 +1,9 @@
 import os
 import logging
-import time
+import asyncio
 from PIL import Image
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, filters
-from telegram.error import TelegramError
 
 # إعدادات البوت
 TOKEN = '7472129592:AAFFqjqnXNITuLHhzeIcIURf8pHmbVnoUQY'
@@ -145,7 +144,7 @@ async def button(update: Update, context: CallbackContext) -> None:
         await context.job_queue.run_once(delete_message, 300, context=(chat_id, message.message_id))
     elif query.data == 'red':
         keyboard = [
-            [InlineKeyboardButton("✅تم التحويل✅", callback_data='red_done')],
+            [InlineKeyboardButton("✅تم التحويل✅", callback_data='insta_done')],
             [InlineKeyboardButton("❌الغاء❌", callback_data='main_menu')]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -188,5 +187,7 @@ async def main() -> None:
     await application.run_polling()
 
 if __name__ == '__main__':
-    import asyncio
-    asyncio.run(main())
+    try:
+        asyncio.get_event_loop().run_until_complete(main())
+    except RuntimeError as e:
+        print(f"RuntimeError: {e}")
