@@ -6,16 +6,16 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext, MessageHandler, filters
 from telegram.error import TelegramError
 
-# إعدادات البوت
+
 TOKEN = '7472129592:AAFFqjqnXNITuLHhzeIcIURf8pHmbVnoUQY'
 INSTANT_PAYMENT_ADDRESS = "mobander@instapay"
 VODAFONE_CASH = "01007265599"
 
-# تعريف متغير رقم المستخدم
+
 USER_ID = None
 USER_CHAT_ID = None
 
-# رسائل مختلفة
+
 MESSAGE_ABOUT_ARAB_TECHNO = (
     "معاك البوت الرسمي الخاص ب عرب تكنو ستور🤖\n\n"
     "مرحبا في عالم عرب تكنو❤️🌍\n\n"
@@ -85,17 +85,16 @@ MESSAGE_FEEDBACK = (
     "https://t.me/arabtechnogroup/5020"
 )
 
-# معلومات المسؤول
+
 TARGET_CHAT_ID = 1212985250
 
-# مسار حفظ الصورة
 IMAGE_SAVE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Photos')
 
-# إعدادات تسجيل الأخطاء
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# مجموعات لتخزين معرفات الصور والرسائل المرسلة
+
 sent_photos = set()
 sent_messages = set()
 
@@ -197,7 +196,7 @@ def handle_message(update: Update, context: CallbackContext) -> None:
     text = update.message.text
 
     if context.user_data.get('waiting_for_id'):
-        # معالجة إدخال ID للمستخدمين
+       
         context.user_data['waiting_for_id'] = False
         context.bot.send_message(chat_id=chat_id, text="تم استلام الشحنة بنجاح, شكرًا لك!")
         context.bot.send_message(chat_id=TARGET_CHAT_ID, text=f"استلم ID من {chat_id}: {text}")
