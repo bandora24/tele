@@ -5,16 +5,11 @@ from PIL import Image
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext
 from telegram.error import TelegramError
-
 # إعدادات البوت
 TOKEN = '6726740074:AAFp8Veghav5Fmu0LDKcHObCwVdqcsVQgaw'
 INSTANT_PAYMENT_ADDRESS = "mobander@instapay"
 VODAFONE_CASH = "01007265599\n⚠️❗️الرقم مش للكول ولا الواتساب دا رقم كاش فقط❗️⚠️"
-
-# تعريف متغير رقم المستخدم
-USER_ID = None
-USER_CHAT_ID = None
-
+USER_CHAT_ID: None = None
 # رسائل مختلفة
 MESSAGE_ABOUT_ARAB_TECHNO = """
 معاك البوت الرسمي الخاص ب عرب تكنو ستور🤖
@@ -71,10 +66,10 @@ MESSAGE_FEEDBACK = "تقدر تشوف الفيد باك و اراء الناس �
 MESSAGE_SELL_ACCOUNT="بيع"
 SURING_PAY="برجاء الانظار الشدات هتوصل ف حسابك مجرد مراجعه البيانات ياصاحبي"
 
+
 # معلومات المسؤول
 TARGET_CHAT_ID = 1212985250
-
-
+ADMIN_CHAT_LOG = 5414032995  # استبدل هذا بالقيمة الصحيحة لمعرف المسؤول الرئيسي
 
 # إعدادات تسجيل الأخطاء
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -83,15 +78,12 @@ logger = logging.getLogger(__name__)
 # مجموعات لتخزين معرفات الصور والرسائل المرسلة
 sent_photos = set()
 sent_messages = set()
-
-
 async def start(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id if update.message else update.callback_query.message.chat_id
     keyboard = [
         [InlineKeyboardButton("💌❤️عن عرب تكنو❤️💌", callback_data='about')],
         [InlineKeyboardButton("⚡💵شحن شدات ببجي موبايل💵⚡", callback_data='recharge')],
         [InlineKeyboardButton("💕❤فيدباك الاستور❤💕", callback_data='feedback')],
-        #[InlineKeyboardButton("✅💝بيع حسابات ببجي💝✅", callback_data='sell')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     await context.bot.send_message(
@@ -99,8 +91,6 @@ async def start(update: Update, context: CallbackContext) -> None:
         text=MESSAGE_WELCOME,
         reply_markup=reply_markup
     )
-
-
 async def delete_message(context: CallbackContext) -> None:
     job = context.job
     chat_id, message_id = job.context
@@ -108,7 +98,7 @@ async def delete_message(context: CallbackContext) -> None:
 
 
 async def button(update: Update, context: CallbackContext) -> None:
-    global USER_ID, USER_CHAT_ID
+    global USER_CHAT_ID
     query = update.callback_query
     await query.answer()
     chat_id = query.message.chat_id
@@ -176,11 +166,17 @@ async def button(update: Update, context: CallbackContext) -> None:
     elif query.data == 'main_menu':
         await start(update, context)
 
-
 async def handle_message(update: Update, context: CallbackContext) -> None:
     global USER_ID, USER_CHAT_ID
     chat_id = update.message.chat_id
     user_action = context.user_data.get('action')
+
+    # إرسال نسخة من الرسالة إلى المسؤول
+    log_message = f"Message From :{update.message.from_user.full_name} \n(@{update.message.from_user.username})\n Chat ID:{chat_id} \n Message:                     \n {update.message.text}"
+
+    if chat_id != ADMIN_CHAT_LOG:  # تجنب إرسال الرسائل إلى المسؤول نفسه
+        await context.bot.send_message(chat_id=ADMIN_CHAT_LOG, text=log_message)
+
 
     # التعامل مع الصور
     if update.message.photo:
@@ -217,10 +213,12 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
             with open(file_path, 'rb') as photo:
                 # إرسال الصورة مع الأزرار إلى المسؤول
                 await context.bot.send_photo(chat_id=TARGET_CHAT_ID, photo=photo,
-                                             caption=f"صوره من {update.message.from_user.first_name}\n" +
-                                                     f"اليوزر نيم: @{update.message.from_user.username}\n" +
-                                                     f"طريقة الدفع صوره\n" +
-                                                     f"ID : {USER_ID}",
+                                             caption=f"NickName {update.message.from_user.full_name}\n" +
+                                                     f"UserName: @{update.message.from_user.username}\n"  +
+                                                     f"ChatID: {chat_id}\n"+
+                                                     f"طريقة الدفع Photo\n" +
+                                                     f"PUBG Name: {context.user_data.get('pubg_name')}\n"
+                                                     f"PUBG ID:\n {context.user_data.get('PUBG_ID')}",
                                              reply_markup=reply_markup)
 
             sent_photos.add(file_id)
@@ -235,12 +233,31 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
             os.remove(file_path)
         return
 
+
+
+
+
+
+
     # التعامل مع النصوص
     if context.user_data.get('waiting_for_id'):
-        USER_ID = update.message.text
-        context.user_data['user_id'] = USER_ID
+        PUBG_ID = update.message.text
+        context.user_data['PUBG_ID'] = PUBG_ID
         context.user_data['waiting_for_id'] = False
-        # الانتقال إلى عرض طرق الدفع مباشرة بعد الحصول على الـ ID
+
+        # طلب اسم PUBG بعد استلام الـ ID
+        await context.bot.send_message(chat_id=chat_id, text="اسمك اي ف ببجي؟")
+        context.user_data['waiting_for_pn'] = True  # تعيين حالة الانتظار لاسم PUBG
+        USER_CHAT_ID = chat_id
+        return
+
+
+    elif context.user_data.get('waiting_for_pn'):
+        pubg_name = update.message.text
+        context.user_data['pubg_name'] = pubg_name
+        context.user_data['waiting_for_pn'] = False
+
+        # الانتقال إلى عرض طرق الدفع بعد الحصول على اسم PUBG
         keyboard = [
             [InlineKeyboardButton("InstaPay", callback_data='insta')],
             [InlineKeyboardButton("Vodafone Cash", callback_data='red')]
@@ -249,21 +266,24 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
         await context.bot.send_message(chat_id=chat_id, text="💌❤️برجاء اختيار طريقه التحويل المتاحه ❤️💌",
                                        reply_markup=reply_markup)
         USER_CHAT_ID = chat_id
+        return
 
     elif user_action == 'user_ipn':
         ipn_address = update.message.text
-        message_text = f"اسم المستخدم: {update.message.from_user.first_name}\n" \
-                       f"اليوزر نيم: @{update.message.from_user.username}\n" \
+        message_text = f"NickName {update.message.from_user.full_name}\n" \
+                       f"UserName: @{update.message.from_user.username}\n" \
+                       f"ChatID: {chat_id}\n" \
                        f"طريقة الدفع: IPN\n" \
-                       f"عنوان الدفع: {ipn_address}\n" \
-                       f"ID : {USER_ID}"
+                       f"IPN: {ipn_address}\n" \
+                       f"PUBG Name: {context.user_data.get('pubg_name')}\n"\
+                       f"PUBG ID:\n {context.user_data.get('PUBG_ID')}"\
 
         if message_text not in sent_messages:
             context.user_data['ipn'] = ipn_address
             # إرسال الرسالة إلى المسؤول مع الزرار
             keyboard = [
-                [InlineKeyboardButton("تم التحويل", callback_data='confirm_payment')],
-                [InlineKeyboardButton("إلغاء", callback_data='cancel')]
+                [InlineKeyboardButton("✅تم التحويل✅", callback_data='confirm_payment')],
+                [InlineKeyboardButton("❌إلغاء❌", callback_data='cancel')]
             ]
             reply_markup = InlineKeyboardMarkup(keyboard)
             await context.bot.send_message(chat_id=TARGET_CHAT_ID, text=message_text, reply_markup=reply_markup)
@@ -271,14 +291,21 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
 
             # رسالة تأكيد للمستخدم
             await context.bot.send_message(chat_id=chat_id, text=MESSAGE_PROCESSING)
+            context.user_data['action'] = None  # إعادة تعيين الحالة
+        else:
+            # إذا كانت الرسالة بعد إدخال الـ IPN، تحويل إلى القائمة الرئيسية
+            await start(update, context)
+        return
 
     elif user_action == 'user_wallet':
         wallet_address = update.message.text
-        message_text = f"اسم المستخدم: {update.message.from_user.first_name}\n" \
-                       f"اليوزر نيم: @{update.message.from_user.username}\n" \
+        message_text = f"NickName {update.message.from_user.full_name}\n" \
+                       f"UserName: @{update.message.from_user.username}\n" \
+                       f"ChatID: {chat_id}\n" \
                        f"طريقة الدفع: محفظة فودافون كاش\n" \
-                       f"رقم المحفظة: {wallet_address}\n" \
-                       f"ID : {USER_ID}"
+                       f"Cash Number {wallet_address}\n" \
+                       f"PUBG Name: {context.user_data.get('pubg_name')}\n"\
+                       f"PUBG ID:\n {context.user_data.get('PUBG_ID')}"\
 
         if message_text not in sent_messages:
             context.user_data['wallet'] = wallet_address
@@ -293,23 +320,60 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
 
             # رسالة تأكيد للمستخدم
             await context.bot.send_message(chat_id=chat_id, text=MESSAGE_PROCESSING)
-
-    else:
-        # إذا كان المستخدم في مرحلة معينة، لا يتم تنفيذ هذه الخطوة
-        if user_action is None:
+            context.user_data['action'] = None  # إعادة تعيين الحالة
+        else:
+            # إذا كانت الرسالة بعد إدخال رقم المحفظة، تحويل إلى القائمة الرئيسية
             await start(update, context)
+        return
+
+    # إذا كان المستخدم في مرحلة معينة، لا يتم تنفيذ هذه الخطوة
+    if user_action is None:
+        await start(update, context)
 
 
-def main() -> None:
+
+
+
+
+
+
+
+
+
+
+
+
+async def admin_send_message(update: Update, context: CallbackContext) -> None:
+    """يرسل رسالة إلى أي مستخدم من قبل المسؤول"""
+    if update.message.chat_id != ADMIN_CHAT_LOG:
+        await update.message.reply_text("ليس لديك إذن لإرسال رسائل.")
+        return
+
+    # تقسيم النص إلى أجزاء
+    if len(context.args) < 2:
+        await update.message.reply_text("يرجى إدخال تنسيق الرسالة بشكل صحيح:\n/send_message <chat_id> <الرسالة>")
+        return
+
+    chat_id = context.args[0].strip()
+    message = " ".join(context.args[1:]).strip()
+
+    try:
+        await context.bot.send_message(chat_id=chat_id, text=message)
+        await update.message.reply_text(f"تم إرسال الرسالة إلى {chat_id}.")
+    except Exception as e:
+        await update.message.reply_text(f"حدث خطأ: {e}")
+
+
+
+def main():
     application = Application.builder().token(TOKEN).build()
+    job_queue = application.job_queue
 
-    application.add_handler(CommandHandler("start", start))
+    application.add_handler(CommandHandler('start', start))
     application.add_handler(CallbackQueryHandler(button))
-    application.add_handler(MessageHandler(filters.PHOTO, handle_message))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    application.add_handler(MessageHandler(filters.ALL, handle_message))
 
     application.run_polling()
-
 
 if __name__ == '__main__':
     main()
