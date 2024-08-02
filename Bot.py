@@ -372,6 +372,7 @@ def main():
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.ALL, handle_message))
+    application.add_handler(CommandHandler("send_message", admin_send_message))
 
     application.run_polling()
 
