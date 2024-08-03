@@ -78,6 +78,27 @@ logger = logging.getLogger(__name__)
 # مجموعات لتخزين معرفات الصور والرسائل المرسلة
 sent_photos = set()
 sent_messages = set()
+async def admin_send_message(update: Update, context: CallbackContext) -> None:
+    """يرسل رسالة إلى أي مستخدم من قبل المسؤول"""
+    if update.message.chat_id != ADMIN_CHAT_LOG:
+        await update.message.reply_text("ليس لديك إذن لإرسال رسائل.")
+        return
+
+    # تقسيم النص إلى أجزاء
+    if len(context.args) < 2:
+        await update.message.reply_text("يرجى إدخال تنسيق الرسالة بشكل صحيح:\n/send_message <chat_id> <الرسالة>")
+        return
+
+    chat_id = context.args[0].strip()
+    message = " ".join(context.args[1:]).strip()
+
+    try:
+        await context.bot.send_message(chat_id=chat_id, text=message)
+        await update.message.reply_text(f"تم إرسال الرسالة إلى {chat_id}.")
+    except Exception as e:
+        await update.message.reply_text(f"حدث خطأ: {e}")
+
+
 async def start(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id if update.message else update.callback_query.message.chat_id
     keyboard = [
@@ -91,6 +112,8 @@ async def start(update: Update, context: CallbackContext) -> None:
         text=MESSAGE_WELCOME,
         reply_markup=reply_markup
     )
+
+
 async def delete_message(context: CallbackContext) -> None:
     job = context.job
     chat_id, message_id = job.context
@@ -330,49 +353,14 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
     if user_action is None:
         await start(update, context)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-async def admin_send_message(update: Update, context: CallbackContext) -> None:
-    """يرسل رسالة إلى أي مستخدم من قبل المسؤول"""
-    if update.message.chat_id != ADMIN_CHAT_LOG:
-        await update.message.reply_text("ليس لديك إذن لإرسال رسائل.")
-        return
-
-    # تقسيم النص إلى أجزاء
-    if len(context.args) < 2:
-        await update.message.reply_text("يرجى إدخال تنسيق الرسالة بشكل صحيح:\n/send_message <chat_id> <الرسالة>")
-        return
-
-    chat_id = context.args[0].strip()
-    message = " ".join(context.args[1:]).strip()
-
-    try:
-        await context.bot.send_message(chat_id=chat_id, text=message)
-        await update.message.reply_text(f"تم إرسال الرسالة إلى {chat_id}.")
-    except Exception as e:
-        await update.message.reply_text(f"حدث خطأ: {e}")
-
-
-
 def main():
     application = Application.builder().token(TOKEN).build()
     job_queue = application.job_queue
-
+    application.add_handler(CommandHandler("send_message", admin_send_message))
     application.add_handler(CommandHandler('start', start))
     application.add_handler(CallbackQueryHandler(button))
     application.add_handler(MessageHandler(filters.ALL, handle_message))
-    application.add_handler(CommandHandler("send_message", admin_send_message))
+
 
     application.run_polling()
 
