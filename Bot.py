@@ -8,6 +8,8 @@ from telegram.error import TelegramError
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -15,13 +17,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
 
-driver_path = 'C:/Users/hamad/Desktop/Programing/Midas Bot/chromedriver.exe'
-chrome_options = Options()
-chrome_options.add_argument("--disable-blink-features=AutomationControlled")  # اجعل WebDriver أقل وضوحًا
-service = Service(driver_path)
+service = Service(executable_path='/usr/local/bin/geckodriver')
+options = Options()
+options.add_argument('-headless')
+driver = webdriver.Firefox(service=service, options=options)
 
 # إعدادات البوت
-TOKEN = '7472129592:AAF9kYzYZ1Ak_kevDLeWJwE5Rgsm2gpPdhw'
+TOKEN = '6726740074:AAFp8Veghav5Fmu0LDKcHObCwVdqcsVQgaw'
 INSTANT_PAYMENT_ADDRESS = "mobander@instapay"
 VODAFONE_CASH = "01007265599\n⚠️❗️الرقم مش للكول ولا الواتساب دا رقم كاش فقط❗️⚠️"
 USER_CHAT_ID: None = None
