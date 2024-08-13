@@ -5,23 +5,18 @@ from PIL import Image
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext
 from telegram.error import TelegramError
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webelement import WebElement
+from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import time
-
 service = Service(executable_path='/usr/local/bin/geckodriver')
 options = Options()
-options.add_argument('-headless')
-driver = webdriver.Firefox(service=service, options=options)
-
+options.add_argument('--headless')
 # إعدادات البوت
 TOKEN = '6726740074:AAFp8Veghav5Fmu0LDKcHObCwVdqcsVQgaw'
 INSTANT_PAYMENT_ADDRESS = "mobander@instapay"
