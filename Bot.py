@@ -5,20 +5,8 @@ from PIL import Image
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext
 from telegram.error import TelegramError
-from selenium.webdriver.remote.webelement import WebElement
-from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, NoSuchElementException
-import time
-service = Service(executable_path='/usr/local/bin/geckodriver')
-options = Options()
-options.add_argument('--headless')
 # إعدادات البوت
-TOKEN = '6726740074:AAFp8Veghav5Fmu0LDKcHObCwVdqcsVQgaw'
+TOKEN = '7472129592:AAF9kYzYZ1Ak_kevDLeWJwE5Rgsm2gpPdhw'
 INSTANT_PAYMENT_ADDRESS = "mobander@instapay"
 VODAFONE_CASH = "01007265599\n⚠️❗️الرقم مش للكول ولا الواتساب دا رقم كاش فقط❗️⚠️"
 USER_CHAT_ID: None = None
@@ -124,6 +112,8 @@ async def start(update: Update, context: CallbackContext) -> None:
         text=MESSAGE_WELCOME,
         reply_markup=reply_markup
     )
+
+
 async def delete_message(context: CallbackContext) -> None:
     job = context.job
     chat_id, message_id = job.context
@@ -135,7 +125,7 @@ async def button(update: Update, context: CallbackContext) -> None:
     query = update.callback_query
     await query.answer()
     chat_id = query.message.chat_id
-   
+
     if query.data == 'about':
         keyboard = [[InlineKeyboardButton("📜القائمة الرئيسية📜", callback_data='main_menu')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -199,22 +189,6 @@ async def button(update: Update, context: CallbackContext) -> None:
     elif query.data == 'main_menu':
         await start(update, context)
 
-    
-    elif query.data == 'confirm_name':
-
-        # إذا تم الضغط على زر التأكيد
-        await context.bot.send_message(chat_id=chat_id, text="تم تأكيد اسمك بنجاح! 🎉")
-        keyboard = [
-            [InlineKeyboardButton("InstaPay", callback_data='insta')],
-            [InlineKeyboardButton("Vodafone Cash", callback_data='red')]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await context.bot.send_message(chat_id=chat_id, text="💌❤️برجاء اختيار طريقه التحويل المتاحه ❤️💌", reply_markup=reply_markup)
-        USER_CHAT_ID = chat_id  
-    elif query.data == 'cancel1':
-        await start(update, context)
-
-
 async def handle_message(update: Update, context: CallbackContext) -> None:
     global USER_ID, USER_CHAT_ID
     chat_id = update.message.chat_id
@@ -226,6 +200,8 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
     if chat_id != ADMIN_CHAT_LOG:  # تجنب إرسال الرسائل إلى المسؤول نفسه
         await context.bot.send_message(chat_id=ADMIN_CHAT_LOG, text=log_message)
 
+
+    # التعامل مع الصور
     if update.message.photo:
         if user_action not in ['user_ipn', 'user_wallet']:
             return
@@ -280,87 +256,31 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
             os.remove(file_path)
         return
 
+
+
+
+
+
+
     # التعامل مع النصوص
     if context.user_data.get('waiting_for_id'):
         PUBG_ID = update.message.text
         context.user_data['PUBG_ID'] = PUBG_ID
         context.user_data['waiting_for_id'] = False
-
-        try:
-
-             driver = webdriver.Chrome(service=service, options=chrome_options)
-             driver.get('https://www.midasbuy.com/midasbuy/iq/buy/pubgm')
-             print("Page loaded successfully")
-             iframe = driver.find_element(By.XPATH, '/html/body/div[3]/iframe')
-             driver.switch_to.frame(iframe)
-             close2 = driver.find_element(By.XPATH, '/html/body/div[4]/div/div[1]')
-             close2.click()
-             print("Iframe Ads Skipped")
-             driver.switch_to.default_content()
-        except Exception:
-             
-             print("No Framed Ads")
-             driver.switch_to.default_content()
-    
-        try:
-              ads: WebElement = driver.find_element(by=By.XPATH, value='//*[@id="root"]/div/div[14]/div[5]/i')
-              ads.click()
-              print("Nat Ads Skipped")
-        except Exception:
-              print("No Nat Ads")
-        try:
-              ads4: WebElement = driver.find_element(by=By.XPATH, value='//*[@id="root"]/div/div[13]/div/div[2]')
-              ads4.click()
-              print("Nat Ads1 Skipped")
-        except Exception:
-              print("No Nat1 Ads")      
-    
-        try:
-             accept: WebElement = driver.find_element(by=By.XPATH, value='//*[@id="root"]/div/div[11]/div[3]/div[1]/div/div/div/div')
-             accept.click()
-             print("Accepted Cookies")
-        except Exception:
-             print("No Cookies Message")
-    
-        try:
-            login: WebElement = driver.find_element(by=By.XPATH, value='//*[@id="root"]/div/div[2]/div[2]/div/div[2]/div[2]/div/div/div')
-            login.click()
-            print("Logged in")
-        
-            ID12: WebElement = driver.find_element(by=By.XPATH, value='//*[@id="root"]/div/div[5]/div[2]/div[1]/div[5]/div[2]/div/div/div[1]/input')
-            ID12.send_keys(PUBG_ID)
-            print("PUBG ID Typed")
-        
-            ok: WebElement = driver.find_element(by=By.XPATH, value='//*[@id="root"]/div/div[5]/div[2]/div[1]/div[5]/div[3]/div/div/div/div')
-            ok.click()
-            print("Pressed OK")
-        
-            read_id = WebDriverWait(driver, 10).until(
-                 EC.presence_of_element_located((By.XPATH, '//*[@id="root"]/div/div[2]/div[2]/div/div[2]/div[2]/div/div/div[1]/div/span[1]'))
-                )
-        
-        # حفظ البيانات في متغيرات
-            pubg_name = read_id.text
-            print("Pubg_Name: ", pubg_name)
-            
-
-    
-        except Exception: print("Failed")
-
-        finally:
-              chat_id = update.message.chat_id
-              pubg_name = read_id.text
-              driver.quit()
-              keyboard = [
-                  [InlineKeyboardButton("✅", callback_data='confirm_name')],
-                  [InlineKeyboardButton("❌", callback_data='cancel1')]
-                    ]
-              reply_markup = InlineKeyboardMarkup(keyboard)
-              await context.bot.send_message(chat_id=chat_id, text=pubg_name)
-              await context.bot.send_message(chat_id=chat_id, text="هل هذا اسمك في اللعبة؟", reply_markup=reply_markup)
-              context.user_data['pubg_name'] = pubg_name
-              query = update.callback_query
-              chat_id = query.message.chat_id
+        USER_CHAT_ID = chat_id
+        pubg_name = update.message.text
+        context.user_data['pubg_name'] = pubg_name
+###############################################################################
+        # الانتقال إلى عرض طرق الدفع بعد الحصول على اسم PUBG
+        keyboard = [
+            [InlineKeyboardButton("InstaPay", callback_data='insta')],
+            [InlineKeyboardButton("Vodafone Cash", callback_data='red')]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        await context.bot.send_message(chat_id=chat_id, text="💌❤️برجاء اختيار طريقه التحويل المتاحه ❤️💌",
+                                       reply_markup=reply_markup)
+        USER_CHAT_ID = chat_id
+        return
 
     elif user_action == 'user_ipn':
         ipn_address = update.message.text
