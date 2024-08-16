@@ -36,23 +36,6 @@ https://www.facebook.com/ASSO.ALTORKY/
 
 متنساش تشترك وتتابعنا عليهم😍❤️
 """
-MESSAGE_RECHARGE_PUBG = """
-الاسعار الموجودة 🏷
-ببجي العالمية فقط 🎮🔫
-الشحن بالأيدي 🆔
-60 UC💵 = 50 EG💷
-355 UC💵 = 260 EG💷
-720 UC💵 = 490 EG💷
-1950 UC💵 = 1200 EG💷
-4000 UC💵 = 2250 EG💷
-8400 UC💵 = 4500 EG💷
-16800 UC💵 = 9000 EG💷
-25200 UC💵 = 13600 EG💷
-اسعار عروض الايدي المره الواحدة ...
-60 UC💵 = 40 EG💷
-120 UC💵 = 70 EG💷
-360 UC💵 = 200 EG💷
-"""
 MESSAGE_WELCOME = 'نورت جروب العائلة الملكية (جروب عرب تكنو) ❤️😍\nاتفضل ياحبيب قلبي قولي اقدر اساعدك ازاي.؟❤️‍🔥👌'
 MESSAGE_SORRY = "برجاء العلم ان هذه الاسعار هي اقل اسعار يمكن توفيرها حاليا نتمني لك يوم سعيد❤😍"
 MESSAGE_RECHARGE_DONE = "شداتك وصلت حسابك بالسلامه ياصديقي🚀❤️\nاتمني تكون تكون خدمتنا مرضيه بالنسبه ليك 💖👑\nمتسناش تقيمنا علي التيليجرام وتقول رايك ف الاستور 💞❣️\nhttps://t.me/arabtechnogroup/5020"
@@ -66,7 +49,7 @@ MESSAGE_FEEDBACK = "تقدر تشوف الفيد باك و اراء الناس �
 MESSAGE_SELL_ACCOUNT="بيع"
 SURING_PAY="برجاء الانظار الشدات هتوصل ف حسابك مجرد مراجعه البيانات ياصاحبي"
 
-
+us_amount= None
 # معلومات المسؤول
 TARGET_CHAT_ID = 1212985250
 ADMIN_CHAT_LOG = 5414032995  # استبدل هذا بالقيمة الصحيحة لمعرف المسؤول الرئيسي
@@ -135,12 +118,79 @@ async def button(update: Update, context: CallbackContext) -> None:
         context.job_queue.run_once(delete_message, 60, context=(chat_id, message.message_id))
     elif query.data == 'recharge':
         keyboard = [
-            [InlineKeyboardButton("✅موافق✅", callback_data='agree')],
-            [InlineKeyboardButton("ℹ️‼️ما هي عروض الايدي للمره الواحدة‼️ℹ️", callback_data='one_time_id')],
-            [InlineKeyboardButton("❎غير موافق❎", callback_data='disagree')]
+            [InlineKeyboardButton("60 UC💵 = 50 EG💷", callback_data='60uc'),InlineKeyboardButton("355 UC💵 = 260 EG💷", callback_data='355uc')],
+            [InlineKeyboardButton("720 UC💵 = 490 EG💷", callback_data='720uc')],
+            [InlineKeyboardButton("1950 UC💵 = 1200 EG💷", callback_data='1950uc')],
+            [InlineKeyboardButton("4000 UC💵 = 2300 EG💷", callback_data='4000uc')],
+            [InlineKeyboardButton("8400 UC💵 = 4600 EG💷", callback_data='8400uc')],
+            [InlineKeyboardButton("16800 UC💵 = 9100 EG💷", callback_data='16800uc')],
+            [InlineKeyboardButton("25200 UC💵 = 13850 EG💷", callback_data='25200uc')],
+            [InlineKeyboardButton("33600  UC💵 = 18500 EG💷", callback_data='33600uc')],
+            [InlineKeyboardButton("42000  UC💵= 23300 EG💷", callback_data='42000uc')],
+            [InlineKeyboardButton("اسعار عروض الايدي المره الواحدة ...", callback_data='??')],
+            [InlineKeyboardButton("60 UC💵 = 40 EG💷", callback_data='one_time_60'),InlineKeyboardButton("120 UC💵 = 70 EG💷", callback_data='one_time_120')],
+            [InlineKeyboardButton("360 UC💵 = 200 EG💷", callback_data='one_time_360')],
+            [InlineKeyboardButton("غير موافق", callback_data='disagree')]
         ]
+
         reply_markup = InlineKeyboardMarkup(keyboard)
-        message = await context.bot.send_message(chat_id=chat_id, text=MESSAGE_RECHARGE_PUBG, reply_markup=reply_markup)
+        message = await context.bot.send_message(chat_id=chat_id, text="الاسعار الموجودة 🏷"
+                                                                       "ببجي العالمية فقط 🎮🔫"
+                                                                       "الشحن بالأيدي 🆔", reply_markup=reply_markup)
+    elif query.data =='60uc':
+        context.user_data['us_amount'] = "60UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data == '355uc':
+        context.user_data['us_amount'] = "355UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='720uc':
+        context.user_data['us_amount'] = "720UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='1950uc':
+        context.user_data['us_amount'] = "1950UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='4000uc':
+        context.user_data['us_amount'] = "4000UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='8400uc':
+        context.user_data['us_amount'] = "8400UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='16800uc':
+        context.user_data['us_amount'] = "16800UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='25200uc':
+        us_amount = "25200UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='33600uc':
+        context.user_data['us_amount'] = "33600UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='42000uc':
+        context.user_data['us_amount'] = "42000UC"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='one_time_60':
+        context.user_data['us_amount'] = "one_time_60"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='one_time_120':
+        context.user_data['us_amount'] = "one_time_120"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+    elif query.data =='one_time_360':
+        context.user_data['us_amount'] = "one_time_360"
+        context.user_data['waiting_for_id'] = True
+        await context.bot.send_message(chat_id=chat_id, text=MESSAGE_REQUEST_ID)
+
+
     elif query.data == 'sell':
         await context.bot.send_message(chat_id=chat_id, text=MESSAGE_SELL_ACCOUNT)
     elif query.data == 'agree':
@@ -240,6 +290,7 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
                                                      f"UserName: @{update.message.from_user.username}\n"  +
                                                      f"ChatID: {chat_id}\n"+
                                                      f"طريقة الدفع Photo\n" +
+                                                     f"UC Amount: {context.user_data.get('us_amount')}\n" \
                                                      f"PUBG Name: {context.user_data.get('pubg_name')}\n"
                                                      f"PUBG ID:\n {context.user_data.get('PUBG_ID')}",
                                              reply_markup=reply_markup)
@@ -256,22 +307,24 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
             os.remove(file_path)
         return
 
-
-
-
-
-
-
     # التعامل مع النصوص
     if context.user_data.get('waiting_for_id'):
         PUBG_ID = update.message.text
         context.user_data['PUBG_ID'] = PUBG_ID
         context.user_data['waiting_for_id'] = False
+
+        # طلب اسم PUBG بعد استلام الـ ID
+        await context.bot.send_message(chat_id=chat_id, text="اسمك اي ف ببجي؟")
+        context.user_data['waiting_for_pn'] = True  # تعيين حالة الانتظار لاسم PUBG
         USER_CHAT_ID = chat_id
+        return
+
+
+    elif context.user_data.get('waiting_for_pn'):
         pubg_name = update.message.text
         context.user_data['pubg_name'] = pubg_name
-###############################################################################
-        # الانتقال إلى عرض طرق الدفع بعد الحصول على اسم PUBG
+        context.user_data['waiting_for_pn'] = False
+
         keyboard = [
             [InlineKeyboardButton("InstaPay", callback_data='insta')],
             [InlineKeyboardButton("Vodafone Cash", callback_data='red')]
@@ -289,6 +342,7 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
                        f"ChatID: {chat_id}\n" \
                        f"طريقة الدفع: IPN\n" \
                        f"IPN: {ipn_address}\n" \
+                       f"UC Amount: {context.user_data.get('us_amount')}\n" \
                        f"PUBG Name: {context.user_data.get('pubg_name')}\n"\
                        f"PUBG ID:\n {context.user_data.get('PUBG_ID')}"\
 
@@ -318,6 +372,7 @@ async def handle_message(update: Update, context: CallbackContext) -> None:
                        f"ChatID: {chat_id}\n" \
                        f"طريقة الدفع: محفظة فودافون كاش\n" \
                        f"Cash Number {wallet_address}\n" \
+                       f"UC Amount: {context.user_data.get('us_amount')}\n" \
                        f"PUBG Name: {context.user_data.get('pubg_name')}\n"\
                        f"PUBG ID:\n {context.user_data.get('PUBG_ID')}"\
 
