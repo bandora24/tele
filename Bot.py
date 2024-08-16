@@ -6,7 +6,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, CallbackContext
 from telegram.error import TelegramError
 # إعدادات البوت
-TOKEN = '7472129592:AAF9kYzYZ1Ak_kevDLeWJwE5Rgsm2gpPdhw'
+TOKEN = '6726740074:AAFp8Veghav5Fmu0LDKcHObCwVdqcsVQgaw'
 INSTANT_PAYMENT_ADDRESS = "mobander@instapay"
 VODAFONE_CASH = "01007265599\n⚠️❗️الرقم مش للكول ولا الواتساب دا رقم كاش فقط❗️⚠️"
 USER_CHAT_ID: None = None
