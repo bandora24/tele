@@ -118,12 +118,12 @@ async def button(update: Update, context: CallbackContext) -> None:
         context.job_queue.run_once(delete_message, 60, context=(chat_id, message.message_id))
     elif query.data == 'recharge':
         keyboard = [
-            [InlineKeyboardButton("60 UC💵 = 50 EG💷", callback_data='60uc'),InlineKeyboardButton("355 UC💵 = 260 EG💷", callback_data='355uc')],
+            [InlineKeyboardButton("60 UC💵 = 55 EG💷", callback_data='60uc'),InlineKeyboardButton("355 UC💵 = 260 EG💷", callback_data='355uc')],
             [InlineKeyboardButton("720 UC💵 = 490 EG💷", callback_data='720uc')],
-            [InlineKeyboardButton("1950 UC💵 = 1200 EG💷", callback_data='1950uc')],
+            [InlineKeyboardButton("1950 UC💵 = 1250 EG💷", callback_data='1950uc')],
             [InlineKeyboardButton("4000 UC💵 = 2300 EG💷", callback_data='4000uc')],
             [InlineKeyboardButton("8400 UC💵 = 4600 EG💷", callback_data='8400uc')],
-            [InlineKeyboardButton("16800 UC💵 = 9100 EG💷", callback_data='16800uc')],
+            [InlineKeyboardButton("16800 UC💵 = 9150 EG💷", callback_data='16800uc')],
             [InlineKeyboardButton("25200 UC💵 = 13850 EG💷", callback_data='25200uc')],
             [InlineKeyboardButton("33600  UC💵 = 18500 EG💷", callback_data='33600uc')],
             [InlineKeyboardButton("42000  UC💵= 23300 EG💷", callback_data='42000uc')],
